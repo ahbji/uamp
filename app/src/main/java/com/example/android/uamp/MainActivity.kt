@@ -36,18 +36,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val content: FrameLayout = findViewById(R.id.fragmentContainer)
-        content.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-
         // Since UAMP is a music player, the volume controls should adjust the music volume while
         // in the app.
         volumeControlStream = AudioManager.STREAM_MUSIC
 
         viewModel = ViewModelProviders
-                .of(this, InjectorUtils.provideMainActivityViewModel(this))
-                .get(MainActivityViewModel::class.java)
+            .of(this, InjectorUtils.provideMainActivityViewModel(this))
+            .get(MainActivityViewModel::class.java)
 
         /**
          * Observe [MainActivityViewModel.navigateToFragment] for [Event]s that request a
@@ -57,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             it?.getContentIfNotHandled()?.let { fragmentRequest ->
                 val transaction = supportFragmentManager.beginTransaction()
                 transaction.replace(
-                        R.id.fragmentContainer, fragmentRequest.fragment, fragmentRequest.tag)
+                    R.id.fragmentContainer, fragmentRequest.fragment, fragmentRequest.tag)
                 if (fragmentRequest.backStack) transaction.addToBackStack(null)
                 transaction.commit()
             }
@@ -69,11 +64,11 @@ class MainActivity : AppCompatActivity() {
          * the initial list of media items.
          */
         viewModel.rootMediaId.observe(this,
-                Observer<String> { rootMediaId ->
-                    if (rootMediaId != null) {
-                        navigateToMediaItem(rootMediaId)
-                    }
-                })
+            Observer<String> { rootMediaId ->
+                if (rootMediaId != null) {
+                    navigateToMediaItem(rootMediaId)
+                }
+            })
 
         /**
          * Observe [MainActivityViewModel.navigateToMediaItem] for [Event]s indicating

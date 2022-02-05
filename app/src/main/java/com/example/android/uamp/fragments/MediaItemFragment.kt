@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google Inc. All rights reserved.
+ * Copyright 2020 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,28 +21,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.android.uamp.MediaItemAdapter
-import com.example.android.uamp.databinding.FragmentMediaitemListBinding
+import com.example.android.uamp.MediaItemData
+import com.example.android.uamp.R
 import com.example.android.uamp.utils.InjectorUtils
 import com.example.android.uamp.viewmodels.MainActivityViewModel
 import com.example.android.uamp.viewmodels.MediaItemFragmentViewModel
+import kotlinx.android.synthetic.main.fragment_mediaitem_list.list
+import kotlinx.android.synthetic.main.fragment_mediaitem_list.loadingSpinner
+import kotlinx.android.synthetic.main.fragment_mediaitem_list.networkError
 
 /**
  * A fragment representing a list of MediaItems.
  */
 class MediaItemFragment : Fragment() {
-    private val mainActivityViewModel by activityViewModels<MainActivityViewModel> {
-        InjectorUtils.provideMainActivityViewModel(requireContext())
-    }
-    private val mediaItemFragmentViewModel by viewModels<MediaItemFragmentViewModel> {
-        InjectorUtils.provideMediaItemFragmentViewModel(requireContext(), mediaId)
-    }
-
     private lateinit var mediaId: String
-    private lateinit var binding: FragmentMediaitemListBinding
+    private lateinit var mainActivityViewModel: MainActivityViewModel
+    private lateinit var mediaItemFragmentViewModel: MediaItemFragmentViewModel
 
     private val listAdapter = MediaItemAdapter { clickedItem ->
         mainActivityViewModel.mediaItemClicked(clickedItem)
@@ -63,34 +62,39 @@ class MediaItemFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMediaitemListBinding.inflate(inflater, container, false)
-        return binding.root
+        return inflater.inflate(R.layout.fragment_mediaitem_list, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         // Always true, but lets lint know that as well.
+        val context = activity ?: return
         mediaId = arguments?.getString(MEDIA_ID_ARG) ?: return
 
-        mediaItemFragmentViewModel.mediaItems.observe(viewLifecycleOwner,
-            Observer { list ->
-                binding.loadingSpinner.visibility =
+        mainActivityViewModel = ViewModelProviders
+            .of(context, InjectorUtils.provideMainActivityViewModel(context))
+            .get(MainActivityViewModel::class.java)
+
+        mediaItemFragmentViewModel = ViewModelProviders
+            .of(this, InjectorUtils.provideMediaItemFragmentViewModel(context, mediaId))
+            .get(MediaItemFragmentViewModel::class.java)
+        mediaItemFragmentViewModel.mediaItems.observe(this,
+            Observer<List<MediaItemData>> { list ->
+                loadingSpinner.visibility =
                     if (list?.isNotEmpty() == true) View.GONE else View.VISIBLE
                 listAdapter.submitList(list)
             })
-        mediaItemFragmentViewModel.networkError.observe(viewLifecycleOwner,
-            Observer { error ->
-                if (error) {
-                    binding.loadingSpinner.visibility = View.GONE
-                    binding.networkError.visibility = View.VISIBLE
-                } else {
-                    binding.networkError.visibility = View.GONE
-                }
+        mediaItemFragmentViewModel.networkError.observe(this,
+            Observer<Boolean> { error ->
+                networkError.visibility = if (error) View.VISIBLE else View.GONE
             })
 
         // Set the adapter
-        binding.list.adapter = listAdapter
+        if (list is RecyclerView) {
+            list.layoutManager = LinearLayoutManager(list.context)
+            list.adapter = listAdapter
+        }
     }
 }
 
