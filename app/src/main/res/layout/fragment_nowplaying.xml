@@ -14,8 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -25,17 +24,17 @@
         android:id="@+id/albumArt"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
         android:contentDescription="@string/album_art_alt"
-        app:srcCompat="@android:color/transparent"/>
+        android:scaleType="centerCrop"
+        app:srcCompat="@android:color/transparent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/playerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
         android:layout_gravity="bottom"
         android:background="@drawable/media_overlay_background"
-        android:id="@+id/playerLayout">
+        android:padding="8dp">
 
         <ImageButton
             android:id="@+id/media_button"
@@ -44,7 +43,7 @@
             android:background="?attr/selectableItemBackground"
             android:scaleType="centerInside"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekBar"
             app:srcCompat="@drawable/ic_play_arrow_black_24dp"
             tools:ignore="ContentDescription" />
 
@@ -52,15 +51,12 @@
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="@dimen/text_margin"
-            android:layout_marginEnd="@dimen/text_margin"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Uamp.Title"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/media_button"
             app:layout_constraintRight_toLeftOf="@id/position"
+            app:layout_constraintTop_toBottomOf="@+id/seekBar"
             tools:text="Song Title" />
 
         <TextView
@@ -72,36 +68,31 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Uamp.Subtitle"
-            app:layout_constraintTop_toBottomOf="@+id/title"
             app:layout_constraintLeft_toRightOf="@id/media_button"
             app:layout_constraintRight_toLeftOf="@id/position"
+            app:layout_constraintTop_toBottomOf="@+id/title"
             tools:text="Artist" />
 
         <TextView
             android:id="@+id/position"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="@dimen/text_margin"
-            android:layout_marginEnd="@dimen/text_margin"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Uamp.Title"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekBar"
             tools:text="0:00" />
 
         <TextView
             android:id="@+id/duration"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/text_margin"
-            android:layout_marginEnd="@dimen/text_margin"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Uamp.Subtitle"
-            app:layout_constraintTop_toBottomOf="@id/position"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/position"
             tools:text="0:00" />
 
         <SeekBar
@@ -111,7 +102,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.050000012" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
