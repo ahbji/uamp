@@ -54,6 +54,14 @@ class NowPlayingFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_nowplaying, container, false)
 
+        playerView = view.findViewById(R.id.playerLayout)
+        val initialPadding = playerView.paddingBottom
+
+        playerView.setOnApplyWindowInsetsListener { view, insets ->
+            view.updatePadding(bottom = insets.systemWindowInsetBottom + initialPadding)
+            insets
+        }
+
         return view
     }
 
