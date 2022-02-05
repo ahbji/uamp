@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc. All rights reserved.
+ * Copyright 2020 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ import com.example.android.uamp.media.extensions.title
  * resources.
  */
 class NowPlayingFragmentViewModel(
-    private val app: Application,
-    musicServiceConnection: MusicServiceConnection
+        private val app: Application,
+        musicServiceConnection: MusicServiceConnection
 ) : AndroidViewModel(app) {
 
     /**
@@ -57,11 +57,12 @@ class NowPlayingFragmentViewModel(
      * media item currently being played.
      */
     data class NowPlayingMetadata(
-        val id: String,
+        val id: String?,
         val albumArtUri: Uri,
         val title: String?,
         val subtitle: String?,
-        val duration: String
+        val duration: String,
+        val durationMillis: Long
     ) {
 
         companion object {
@@ -75,6 +76,13 @@ class NowPlayingFragmentViewModel(
                 return if (position < 0) context.getString(R.string.duration_unknown)
                 else context.getString(R.string.duration_format).format(minutes, remainingSeconds)
             }
+            fun timestampToPercentage(position: Long, durationMillis: Long): Int {
+                return when (durationMillis) {
+                    null -> 0
+                    0L -> 0 //Divide by zero
+                    else -> ((100 * position) / durationMillis).toInt()
+                }
+            }
         }
     }
 
@@ -84,7 +92,7 @@ class NowPlayingFragmentViewModel(
         postValue(0L)
     }
     val mediaButtonRes = MutableLiveData<Int>().apply {
-        postValue(R.drawable.ic_album_black_24dp)
+        postValue(com.example.android.uamp.R.drawable.ic_album_black_24dp)
     }
 
     private var updatePosition = true
@@ -168,13 +176,14 @@ class NowPlayingFragmentViewModel(
     ) {
 
         // Only update media item once we have duration available
-        if (mediaMetadata.duration != 0L && mediaMetadata.id != null) {
+        if (mediaMetadata.duration != 0L) {
             val nowPlayingMetadata = NowPlayingMetadata(
-                mediaMetadata.id!!,
+                mediaMetadata.id,
                 mediaMetadata.albumArtUri,
                 mediaMetadata.title?.trim(),
                 mediaMetadata.displaySubtitle?.trim(),
-                NowPlayingMetadata.timestampToMSS(app, mediaMetadata.duration)
+                NowPlayingMetadata.timestampToMSS(app, mediaMetadata.duration),
+                mediaMetadata.duration
             )
             this.mediaMetadata.postValue(nowPlayingMetadata)
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Google Inc. All rights reserved.
+ * Copyright 2020 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,6 @@ class MainActivityViewModel(
         }
     }
 
-
     /**
      * Convenience method used to swap the fragment shown in the main activity
      *
@@ -96,7 +95,6 @@ class MainActivityViewModel(
     fun showFragment(fragment: Fragment, backStack: Boolean = true, tag: String? = null) {
         _navigateToFragment.value = Event(FragmentNavigationRequest(fragment, backStack, tag))
     }
-
 
     /**
      * This posts a browse [Event] that will be handled by the
@@ -126,7 +124,7 @@ class MainActivityViewModel(
                     else -> {
                         Log.w(
                             TAG, "Playable item clicked but neither play nor pause are enabled!" +
-                                    " (mediaId=${mediaItem.mediaId})"
+                                " (mediaId=${mediaItem.mediaId})"
                         )
                     }
                 }
@@ -136,7 +134,19 @@ class MainActivityViewModel(
         }
     }
 
-    fun playMediaId(mediaId: String) {
+    /**
+     * This method moves the playback to the given position
+     */
+    fun seekTo(progress: Int, duration: Long){
+        val position = progress * duration / 100
+        val transportControls = musicServiceConnection.transportControls
+        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
+        if (isPrepared) {
+            transportControls.seekTo(position)
+        }
+    }
+
+    fun playMediaId(mediaId: String?) {
         val nowPlaying = musicServiceConnection.nowPlaying.value
         val transportControls = musicServiceConnection.transportControls
 
@@ -149,7 +159,7 @@ class MainActivityViewModel(
                     else -> {
                         Log.w(
                             TAG, "Playable item clicked but neither play nor pause are enabled!" +
-                                    " (mediaId=$mediaId)"
+                                " (mediaId=$mediaId)"
                         )
                     }
                 }

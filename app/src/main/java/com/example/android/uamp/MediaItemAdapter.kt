@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google Inc. All rights reserved.
+ * Copyright 2020 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,35 @@
 
 package com.example.android.uamp
 
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.android.uamp.MediaItemData.Companion.PLAYBACK_RES_CHANGED
-import com.example.android.uamp.databinding.FragmentMediaitemBinding
-import com.example.android.uamp.fragments.MediaItemFragment
+import kotlinx.android.synthetic.main.fragment_mediaitem.view.albumArt
+import kotlinx.android.synthetic.main.fragment_mediaitem.view.item_state
+import kotlinx.android.synthetic.main.fragment_mediaitem.view.subtitle
+import kotlinx.android.synthetic.main.fragment_mediaitem.view.title
 
 /**
  * [RecyclerView.Adapter] of [MediaItemData]s used by the [MediaItemFragment].
  */
-class MediaItemAdapter(
-    private val itemClickedListener: (MediaItemData) -> Unit
+class MediaItemAdapter(private val itemClickedListener: (MediaItemData) -> Unit
 ) : ListAdapter<MediaItemData, MediaViewHolder>(MediaItemData.diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = FragmentMediaitemBinding.inflate(inflater, parent, false)
-        return MediaViewHolder(binding, itemClickedListener)
+        val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.fragment_mediaitem, parent, false)
+        return MediaViewHolder(view, itemClickedListener)
     }
 
-    override fun onBindViewHolder(
-        holder: MediaViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: MediaViewHolder,
+                                  position: Int,
+                                  payloads: MutableList<Any>) {
 
         val mediaItem = getItem(position)
         var fullRefresh = payloads.isEmpty()
@@ -71,9 +71,8 @@ class MediaItemAdapter(
             holder.playbackState.setImageResource(mediaItem.playbackRes)
 
             Glide.with(holder.albumArt)
-                .load(mediaItem.albumArtUri)
-                .placeholder(R.drawable.default_art)
-                .into(holder.albumArt)
+                    .load(mediaItem.albumArtUri)
+                    .into(holder.albumArt)
         }
     }
 
@@ -82,20 +81,19 @@ class MediaItemAdapter(
     }
 }
 
-class MediaViewHolder(
-    binding: FragmentMediaitemBinding,
-    itemClickedListener: (MediaItemData) -> Unit
-) : RecyclerView.ViewHolder(binding.root) {
+class MediaViewHolder(view: View,
+                      itemClickedListener: (MediaItemData) -> Unit
+) : RecyclerView.ViewHolder(view) {
 
-    val titleView: TextView = binding.title
-    val subtitleView: TextView = binding.subtitle
-    val albumArt: ImageView = binding.albumArt
-    val playbackState: ImageView = binding.itemState
+    val titleView: TextView = view.title
+    val subtitleView: TextView = view.subtitle
+    val albumArt: ImageView = view.albumArt
+    val playbackState: ImageView = view.item_state
 
     var item: MediaItemData? = null
 
     init {
-        binding.root.setOnClickListener {
+        view.setOnClickListener {
             item?.let { itemClickedListener(it) }
         }
     }

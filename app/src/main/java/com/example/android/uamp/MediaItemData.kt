@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Google Inc. All rights reserved.
+ * Copyright 2020 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package com.example.android.uamp
 
 import android.net.Uri
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaBrowserCompat.MediaItem
 import androidx.recyclerview.widget.DiffUtil
+import android.support.v4.media.MediaBrowserCompat.MediaItem
 import com.example.android.uamp.viewmodels.MediaItemFragmentViewModel
 
 /**
@@ -32,13 +32,12 @@ import com.example.android.uamp.viewmodels.MediaItemFragmentViewModel
  * [MediaItemFragmentViewModel.subscriptionCallback].
  */
 data class MediaItemData(
-    val mediaId: String,
-    val title: String,
-    val subtitle: String,
-    val albumArtUri: Uri,
-    val browsable: Boolean,
-    var playbackRes: Int
-) {
+        val mediaId: String,
+        val title: String,
+        val subtitle: String,
+        val albumArtUri: Uri,
+        val browsable: Boolean,
+        var playbackRes: Int) {
 
     companion object {
         /**
@@ -67,19 +66,17 @@ data class MediaItemData(
          * - If something else changed, then refresh the full item for simplicity.
          */
         val diffCallback = object : DiffUtil.ItemCallback<MediaItemData>() {
-            override fun areItemsTheSame(
-                oldItem: MediaItemData,
-                newItem: MediaItemData
-            ): Boolean =
-                oldItem.mediaId == newItem.mediaId
+            override fun areItemsTheSame(oldItem: MediaItemData,
+                                         newItem: MediaItemData): Boolean =
+                    oldItem.mediaId == newItem.mediaId
 
             override fun areContentsTheSame(oldItem: MediaItemData, newItem: MediaItemData) =
-                oldItem.mediaId == newItem.mediaId && oldItem.playbackRes == newItem.playbackRes
+                    oldItem.mediaId == newItem.mediaId && oldItem.playbackRes == newItem.playbackRes
 
             override fun getChangePayload(oldItem: MediaItemData, newItem: MediaItemData) =
-                if (oldItem.playbackRes != newItem.playbackRes) {
-                    PLAYBACK_RES_CHANGED
-                } else null
+                    if (oldItem.playbackRes != newItem.playbackRes) {
+                        PLAYBACK_RES_CHANGED
+                    } else null
         }
     }
 }
