@@ -95,7 +95,7 @@
             app:layout_constraintTop_toBottomOf="@id/position"
             tools:text="0:00" />
 
-        <SeekBar
+        <com.example.android.uamp.view.MySeekBar
             android:id="@+id/seekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
